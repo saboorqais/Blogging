@@ -26,28 +26,31 @@ Post.init({
         type: sequelize_1.DataTypes.TEXT,
     },
     topic: {
-        type: sequelize_1.DataTypes.STRING
+        type: sequelize_1.DataTypes.STRING,
     },
     userId: {
+        // Define userId as a foreign key
         type: sequelize_1.DataTypes.INTEGER,
         references: {
-            model: 'Users',
-            key: 'id' // Using the primary key 'id'
-        }
+            model: "Users",
+            key: "id", // Using the primary key 'id'
+        },
     },
     categoryId: {
+        // Define userId as a foreign key
         type: sequelize_1.DataTypes.INTEGER,
         references: {
-            model: 'Categories',
-            key: 'id' // Using the primary key 'id'
-        }
+            model: "Categories",
+            key: "id", // Using the primary key 'id'
+        },
     },
     imagePath: {
+        // Define userId as a foreign key
         type: sequelize_1.DataTypes.STRING,
-    }
+    },
 }, {
     sequelize: Sequelize_1.default,
-    modelName: 'Post',
+    modelName: "Post",
 });
-comments_1.Comment.belongsTo(Post, { foreignKey: 'postId' }); // Many-to-One association
-Post.hasMany(comments_1.Comment, { foreignKey: 'postId' });
+comments_1.Comment.belongsTo(Post, { foreignKey: "postId" }); // Many-to-One association
+Post.hasMany(comments_1.Comment, { foreignKey: "postId" });

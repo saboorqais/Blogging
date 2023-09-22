@@ -15,19 +15,20 @@ Category.init({
         allowNull: false,
         autoIncrement: true,
         primaryKey: true,
-        type: sequelize_1.DataTypes.INTEGER
+        type: sequelize_1.DataTypes.INTEGER,
     },
     categoryName: {
-        type: sequelize_1.DataTypes.STRING
+        type: sequelize_1.DataTypes.STRING,
     },
     description: {
-        type: sequelize_1.DataTypes.STRING
-    }, imagePath: {
-        type: sequelize_1.DataTypes.STRING
-    }
+        type: sequelize_1.DataTypes.STRING,
+    },
+    imagePath: {
+        type: sequelize_1.DataTypes.STRING,
+    },
 }, {
     sequelize: Sequelize_1.default,
-    modelName: 'Categories',
+    modelName: "Categories",
 });
-post_1.Post.belongsTo(Category, { foreignKey: 'categoryId' }); // Many-to-One association
-Category.hasMany(post_1.Post, { foreignKey: 'categoryId' }); //
+post_1.Post.belongsTo(Category, { foreignKey: "categoryId" }); // Many-to-One association
+Category.hasMany(post_1.Post, { foreignKey: "categoryId" }); //

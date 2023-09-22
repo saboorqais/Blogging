@@ -30,7 +30,7 @@ exports.userSchema = Yup.object().shape({
     firstName: Yup.string().required(),
     lastName: Yup.string(),
     email: Yup.string().email().required(),
-    password: Yup.string().min(6).required()
+    password: Yup.string().min(6).required(),
 });
 exports.postSchema = Yup.object().shape({
     id: Yup.number(),
@@ -40,12 +40,13 @@ exports.postSchema = Yup.object().shape({
     topic: Yup.string().required(),
     userId: Yup.number().required(),
     categoryId: Yup.number().required(),
-    imagePath: Yup.string().required()
+    imagePath: Yup.string().required(),
 });
 exports.commentSchema = Yup.object().shape({
     id: Yup.number(),
     text: Yup.string().max(60).required(),
     userId: Yup.number().required(),
     parentId: Yup.number().nullable(),
-    postId: Yup.number().required()
+    postId: Yup.number().required(),
+    replies: Yup.array().optional()
 });

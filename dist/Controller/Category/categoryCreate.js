@@ -29,8 +29,8 @@ function createCategory(req, res) {
             res.status(201).json(category);
         }
         catch (error) {
-            console.error('Error creating category:', error);
-            res.status(500).json({ error: 'Category creation failed' });
+            console.error("Error creating category:", error);
+            res.status(500).json({ error: "Category creation failed" });
         }
     });
 }

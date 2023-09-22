@@ -8,9 +8,14 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getComment = void 0;
+exports.getCommentsWithChildren = exports.getPaginateComment = exports.getNLevelComment = exports.getNLevelComments = exports.getNestedComments = exports.getComment = void 0;
 const comments_1 = require("../../models/comments");
+const user_1 = require("../../models/user");
+const express_paginate_1 = __importDefault(require("express-paginate"));
 function getComment(req, res) {
     return __awaiter(this, void 0, void 0, function* () {
         try {
@@ -29,3 +34,160 @@ function getComment(req, res) {
     });
 }
 exports.getComment = getComment;
+function getNestedComments(req, res) {
+    return __awaiter(this, void 0, void 0, function* () {
+        try {
+            const { id } = req.params;
+            const topLevelComments = yield getCommentsWithChildren(id, null);
+            res.status(200).send(topLevelComments[0]);
+        }
+        catch (error) { }
+    });
+}
+exports.getNestedComments = getNestedComments;
+function getNLevelComments(req, res) {
+    return __awaiter(this, void 0, void 0, function* () {
+        try {
+            const { postId, parentId } = req.params;
+            console.log(parentId);
+            const parenCheck = parentId === "null" ? null : parentId;
+            const comments = yield comments_1.Comment.findAll({
+                where: {
+                    postId: postId,
+                    parentId: parenCheck,
+                },
+                attributes: {
+                    exclude: ["userId"], // Exclude the specified fields
+                },
+                include: [
+                    {
+                        model: user_1.User,
+                        attributes: {
+                            exclude: ["password"], // Replace with field names to omit
+                        },
+                    },
+                ],
+            });
+            res.status(200).send(comments);
+        }
+        catch (error) {
+            res.status(400).send(error);
+        }
+    });
+}
+exports.getNLevelComments = getNLevelComments;
+function getNLevelComment(req, res) {
+    return __awaiter(this, void 0, void 0, function* () {
+        try {
+            const { postId, parentId } = req.params;
+            console.log(parentId);
+            const parenCheck = parentId === "null" ? null : parentId;
+            const comments = yield comments_1.Comment.findOne({
+                where: {
+                    postId: postId,
+                    parentId: parenCheck,
+                },
+                attributes: {
+                    exclude: ["userId"], // Exclude the specified fields
+                },
+                include: [
+                    {
+                        model: user_1.User,
+                        attributes: {
+                            exclude: ["password"], // Replace with field names to omit
+                        },
+                    },
+                ],
+            });
+            res.status(200).send(comments);
+        }
+        catch (error) {
+            res.status(400).send(error);
+        }
+    });
+}
+exports.getNLevelComment = getNLevelComment;
+function getPaginateComment(req, res) {
+    return __awaiter(this, void 0, void 0, function* () {
+        try {
+            console.log("Paginate Run");
+            // Access the offset calculated by express-paginate
+            const { page, limit } = req.query;
+            const { postId, parentId } = req.params;
+            console.log(parentId);
+            const parenCheck = parentId === "null" ? null : parentId;
+            const { count, rows } = yield comments_1.Comment.findAndCountAll({
+                offset: (parseInt(page) - 1) * parseInt(limit),
+                limit: parseInt(limit),
+                where: {
+                    postId,
+                    parentId: parenCheck,
+                },
+                attributes: {
+                    exclude: ["userId"], // Exclude the specified fields
+                },
+                include: [
+                    {
+                        model: user_1.User,
+                        attributes: {
+                            exclude: ["password"], // Replace with field names to omit
+                        },
+                    },
+                ],
+            });
+            const pageCount = Math.ceil(count / parseInt(limit));
+            const pagination = {
+                currentPage: parseInt(page),
+                pageCount,
+                pageSize: parseInt(limit),
+                totalCount: count,
+            };
+            // Generate the URL of the next page if it exists
+            const nextPage = pageCount > parseInt(page)
+                ? express_paginate_1.default.getArrayPages(req)(parseInt(page) + 1, pageCount, parseInt(page))
+                : null;
+            const response = {
+                results: rows,
+                pagination,
+                nextPage,
+            };
+            res.status(200).send(response);
+        }
+        catch (error) {
+            res.status(400).send(error);
+        }
+    });
+}
+exports.getPaginateComment = getPaginateComment;
+function getCommentsWithChildren(postId, parentId = null) {
+    return __awaiter(this, void 0, void 0, function* () {
+        const comments = yield comments_1.Comment.findAll({
+            where: {
+                postId: postId,
+                parentId: parentId,
+            },
+            attributes: {
+                exclude: ["userId"], // Exclude the specified fields
+            },
+            include: [
+                {
+                    model: comments_1.Comment,
+                    as: "replies",
+                    required: false,
+                },
+                {
+                    model: user_1.User,
+                    attributes: {
+                        exclude: ["password"], // Replace with field names to omit
+                    },
+                },
+            ],
+        });
+        for (const comment of comments) {
+            const childReplies = yield getCommentsWithChildren(postId, comment.id);
+            comment.setDataValue("replies", childReplies);
+        }
+        return comments;
+    });
+}
+exports.getCommentsWithChildren = getCommentsWithChildren;

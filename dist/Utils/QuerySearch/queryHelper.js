@@ -3,10 +3,10 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.findMatch = void 0;
 function getValue(obj, key) {
     const { [key]: value } = obj;
-    return typeof value === 'object' ? value : value;
+    return typeof value === "object" ? value : value;
 }
 function checkMatch(obj, querys, query) {
-    if (typeof obj === 'object' && obj !== null && !obj.hasOwnProperty(query)) {
+    if (typeof obj === "object" && obj !== null && !obj.hasOwnProperty(query)) {
         const condition = Object.keys(obj).map((item) => {
             const value = getValue(obj, item);
             return checkMatch(value, querys, query);
@@ -22,7 +22,7 @@ function checkMatch(obj, querys, query) {
     }
 }
 function findMatch(obj, querys) {
-    if (typeof querys === 'object' && querys !== null) {
+    if (typeof querys === "object" && querys !== null) {
         const booleanArray = Object.keys(querys).map((item) => {
             return checkMatch(obj, querys, item);
         });

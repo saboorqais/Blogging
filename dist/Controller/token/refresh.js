@@ -14,16 +14,14 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
 const refresh = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const refreshToken = req.headers['authorization'];
+    const refreshToken = req.headers["authorization"];
     if (!refreshToken) {
-        return res.status(401).send('Access Denied. No refresh token provided.');
+        return res.status(401).send("Access Denied. No refresh token provided.");
     }
     try {
         const decoded = jsonwebtoken_1.default.verify(refreshToken, process.env.SECRET_KEY);
-        const accessToken = jsonwebtoken_1.default.sign({ user: decoded }, process.env.SECRET_KEY, { expiresIn: '3h' });
-        res
-            .header('Authorization', accessToken)
-            .send(decoded);
+        const accessToken = jsonwebtoken_1.default.sign({ user: decoded }, process.env.SECRET_KEY, { expiresIn: "3h" });
+        res.header("Authorization", accessToken).send(decoded);
     }
     catch (error) {
         console.log(error);

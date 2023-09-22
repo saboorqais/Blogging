@@ -18,10 +18,10 @@ function getCategory(req, res) {
             const categoryId = req.params.id;
             const category = yield categories_1.Category.findByPk(categoryId);
             if (!category) {
-                return res.status(404).json({ error: 'Category not found' });
+                return res.status(404).json({ error: "Category not found" });
             }
             // Get the server's address (hostname and port)
-            const serverAddress = req.protocol + '://' + req.get('host');
+            const serverAddress = req.protocol + "://" + req.get("host");
             // Construct the response object with the complete image URL and other data
             const responseData = {
                 image: `${serverAddress}/${category.imagePath}`,
@@ -32,7 +32,7 @@ function getCategory(req, res) {
         }
         catch (error) {
             console.error(error);
-            res.status(500).json({ error: 'Internal server error' });
+            res.status(500).json({ error: "Internal server error" });
         }
     });
 }
@@ -41,17 +41,13 @@ function selectionCategory(req, res) {
     return __awaiter(this, void 0, void 0, function* () {
         try {
             const category = yield categories_1.Category.findAll({
-                attributes: { exclude: ['imagePath'] }
+                attributes: { exclude: ["imagePath"] },
             });
-            if (!category) {
-                return res.status(404).json({ error: 'Category not found' });
-            }
             // Construct the response object with the complete image URL and other data
             res.status(200).json(category);
         }
         catch (error) {
-            console.error(error);
-            res.status(500).json({ error: 'Internal server error' });
+            res.status(500).json({ error: "Internal server error" });
         }
     });
 }
@@ -59,28 +55,25 @@ exports.selectionCategory = selectionCategory;
 function getCategoryWithRelatedPosts(req, res) {
     return __awaiter(this, void 0, void 0, function* () {
         try {
-            console.log("Hello");
             const categories = yield categories_1.Category.findAll();
-            console.log(categories);
             if (!categories) {
-                return res.status(404).json({ message: 'Category not found' });
+                return res.status(404).json({ message: "Category not found" });
             }
             const results = yield Promise.all(categories.map((category) => __awaiter(this, void 0, void 0, function* () {
                 // Perform some asynchronous operation on 'item'
-                const posts = yield post_1.Post.findAll({ where: { "categoryId": category.id, } });
-                console.log(posts);
+                const posts = yield post_1.Post.findAll({
+                    where: { categoryId: category.id },
+                });
                 return {
                     category,
-                    posts
+                    posts,
                 };
             })));
             // Find all posts associated with the category
             return res.json(results);
         }
         catch (error) {
-            console.log("Error Hello");
-            console.error(error);
-            return res.status(500).json({ message: 'Internal server error' });
+            return res.status(500).json({ message: "Internal server error" });
         }
     });
 }

@@ -32,8 +32,8 @@ Comment.init({
     },
 }, {
     sequelize: Sequelize_1.default,
-    modelName: 'Comment',
+    modelName: "Comment",
 });
 //
-Comment.belongsTo(Comment, { as: 'parent', foreignKey: 'parentId' });
-Comment.hasMany(Comment, { as: 'replies', foreignKey: 'parentId' });
+Comment.belongsTo(Comment, { as: "parent", foreignKey: "parentId" });
+Comment.hasMany(Comment, { as: "replies", foreignKey: "parentId" });

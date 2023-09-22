@@ -8,10 +8,14 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.createPost = void 0;
 const SchemaValidation_1 = require("../../SchemaValidation/SchemaValidation");
 const post_1 = require("../../models/post");
+const body_1 = __importDefault(require("../../Utils/BodyModify/body"));
 function createPost(req, res) {
     return __awaiter(this, void 0, void 0, function* () {
         try {
@@ -20,7 +24,7 @@ function createPost(req, res) {
             yield SchemaValidation_1.postSchema.validate(Object.assign(Object.assign({}, body), { imagePath: imagePath }));
             const newPost = yield post_1.Post.create({
                 title: body.title,
-                body: body.body,
+                body: (0, body_1.default)(body.body),
                 name: body.name,
                 topic: body.topic,
                 userId: body.userId,

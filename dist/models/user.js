@@ -35,14 +35,14 @@ User.init({
         set(value) {
             const saltRounds = 10;
             const hashedPassword = bcrypt_1.default.hashSync(value, saltRounds);
-            this.setDataValue('password', hashedPassword);
+            this.setDataValue("password", hashedPassword);
         },
     },
 }, {
     sequelize: Sequelize_1.default,
-    modelName: 'Users',
+    modelName: "Users",
 });
-post_1.Post.belongsTo(User, { foreignKey: 'userId' }); // Many-to-One association
-User.hasMany(post_1.Post, { foreignKey: 'userId' }); //
-comments_1.Comment.belongsTo(User, { foreignKey: 'userId' }); // Many-to-One association
-User.hasMany(comments_1.Comment, { foreignKey: 'userId' });
+post_1.Post.belongsTo(User, { foreignKey: "userId" }); // Many-to-One association
+User.hasMany(post_1.Post, { foreignKey: "userId" }); //
+comments_1.Comment.belongsTo(User, { foreignKey: "userId" }); // Many-to-One association
+User.hasMany(comments_1.Comment, { foreignKey: "userId" });

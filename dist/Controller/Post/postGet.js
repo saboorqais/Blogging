@@ -12,11 +12,11 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getAllPost = exports.getPost = void 0;
+exports.getAllPost = exports.getPost = exports.getUserPost = void 0;
 const post_1 = require("../../models/post");
 const user_1 = require("../../models/user");
 const express_paginate_1 = __importDefault(require("express-paginate"));
-function getPost(req, res) {
+function getUserPost(req, res) {
     return __awaiter(this, void 0, void 0, function* () {
         try {
             const { id } = req.params;
@@ -27,8 +27,27 @@ function getPost(req, res) {
                 include: {
                     model: user_1.User,
                     attributes: {
-                        exclude: ['password'], // Replace with field names to omit
-                    }
+                        exclude: ["password"], // Replace with field names to omit
+                    },
+                },
+            });
+            // Handle the retrieved data (posts)
+            res.status(200).send(posts);
+        }
+        catch (error) {
+            // Handle any errors
+            res.status(500).send(error);
+        }
+    });
+}
+exports.getUserPost = getUserPost;
+function getPost(req, res) {
+    return __awaiter(this, void 0, void 0, function* () {
+        try {
+            const { id } = req.params;
+            const posts = yield post_1.Post.findOne({
+                where: {
+                    id: id,
                 }
             });
             // Handle the retrieved data (posts)
@@ -52,9 +71,9 @@ function getAllPost(req, res) {
                 include: {
                     model: user_1.User,
                     attributes: {
-                        exclude: ['password'], // Replace with field names to omit
-                    }
-                }
+                        exclude: ["password"], // Replace with field names to omit
+                    },
+                },
             });
             const itemCount = posts.length;
             const pageCount = Math.ceil(itemCount / parseInt(req.query.limit));
@@ -63,7 +82,7 @@ function getAllPost(req, res) {
                 results: posts,
                 pageCount,
                 itemCount,
-                pages: express_paginate_1.default.getArrayPages(req)(1, pageCount, parseInt(req.query.page))
+                pages: express_paginate_1.default.getArrayPages(req)(1, pageCount, parseInt(req.query.page)),
             });
         }
         catch (error) {

@@ -22,7 +22,7 @@ function createUser(req, res) {
                 firstName: body.firstName,
                 lastName: body.lastName,
                 email: body.email,
-                password: body.password
+                password: body.password,
             });
             yield newUser.save();
             res.status(200).send({ response: newUser.toJSON() });
@@ -30,11 +30,11 @@ function createUser(req, res) {
         catch (error) {
             if (error instanceof sequelize_1.UniqueConstraintError) {
                 // Handle unique constraint violation (e.g., duplicate email)
-                res.status(400).json('User with this email already exists');
+                res.status(400).json("User with this email already exists");
             }
             else if (error instanceof sequelize_1.ValidationError) {
                 // Handle other validation errors
-                const validationErrors = error.errors.map(e => e.message);
+                const validationErrors = error.errors.map((e) => e.message);
                 res.status(400).json({ error: validationErrors });
             }
             else {

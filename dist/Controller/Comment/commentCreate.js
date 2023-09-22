@@ -16,12 +16,14 @@ function createComment(req, res) {
     return __awaiter(this, void 0, void 0, function* () {
         try {
             const body = req.body;
+            console.log("SAdddd");
+            console.log(body);
             yield SchemaValidation_1.commentSchema.validate(req.body);
             const newPost = yield comments_1.Comment.create({
                 text: body.text,
                 postId: body.postId,
                 parentId: body.parentId,
-                userId: body.userId
+                userId: body.userId,
             });
             yield newPost.save();
             res.status(200).send(newPost.toJSON());

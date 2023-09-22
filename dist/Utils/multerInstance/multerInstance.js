@@ -15,11 +15,11 @@ const storage = (entity) => {
         },
         filename: (req, file, cb) => {
             // Generate a unique filename for the uploaded file
-            const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
+            const uniqueSuffix = Date.now() + "-" + Math.round(Math.random() * 1e9);
             const extname = path_1.default.extname(file.originalname);
             cb(null, `${entity}-${uniqueSuffix}${extname}`);
         },
     });
 };
-const uploadImage = (entity) => (0, multer_1.default)({ storage: storage(entity) }).single('image');
+const uploadImage = (entity) => (0, multer_1.default)({ storage: storage(entity) }).single("image");
 exports.default = uploadImage;
