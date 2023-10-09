@@ -35,6 +35,7 @@ const login = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
             firstName: user.firstName,
             lastName: user.lastName,
             email: user.email,
+            role: user.role
         }, process.env.SECRET_KEY, { expiresIn: "3h" });
         // Return the token
         res.json({
@@ -42,6 +43,7 @@ const login = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
             refreshToken,
             userId: user.id,
             firstName: user.firstName,
+            role: user.role,
         });
     }
     catch (error) {

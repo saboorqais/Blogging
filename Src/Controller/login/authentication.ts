@@ -25,6 +25,7 @@ const login = async (req: Request, res: Response) => {
         firstName: user.firstName,
         lastName: user.lastName,
         email: user.email,
+        role:user.role
       },
       process.env.SECRET_KEY,
       { expiresIn: "3h" }
@@ -36,6 +37,7 @@ const login = async (req: Request, res: Response) => {
       refreshToken,
       userId: user.id,
       firstName: user.firstName,
+      role:user.role,
     });
   } catch (error) {
     console.error("Login error:", error);

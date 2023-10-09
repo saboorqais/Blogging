@@ -8,10 +8,14 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getCategoryWithRelatedPosts = exports.selectionCategory = exports.getCategory = void 0;
+exports.getAllCategory = exports.getCategoryWithRelatedPosts = exports.selectionCategory = exports.getCategory = void 0;
 const categories_1 = require("../../models/categories");
 const post_1 = require("../../models/post");
+const express_paginate_1 = __importDefault(require("express-paginate"));
 function getCategory(req, res) {
     return __awaiter(this, void 0, void 0, function* () {
         try {
@@ -21,14 +25,7 @@ function getCategory(req, res) {
                 return res.status(404).json({ error: "Category not found" });
             }
             // Get the server's address (hostname and port)
-            const serverAddress = req.protocol + "://" + req.get("host");
-            // Construct the response object with the complete image URL and other data
-            const responseData = {
-                image: `${serverAddress}/${category.imagePath}`,
-                categoryData: category.toJSON(), // Assuming you want to send all category data
-                // Add additional data as needed
-            };
-            res.status(200).json(responseData);
+            res.status(200).json(category);
         }
         catch (error) {
             console.error(error);
@@ -78,3 +75,36 @@ function getCategoryWithRelatedPosts(req, res) {
     });
 }
 exports.getCategoryWithRelatedPosts = getCategoryWithRelatedPosts;
+function getAllCategory(req, res) {
+    return __awaiter(this, void 0, void 0, function* () {
+        try {
+            const { page, limit } = req.query;
+            const { rows, count } = yield categories_1.Category.findAndCountAll({
+                offset: (parseInt(page) - 1) * parseInt(limit),
+                limit: parseInt(limit),
+            });
+            // Construct the response object with the complete image URL and other data
+            const pageCount = Math.ceil(count / parseInt(limit));
+            const pagination = {
+                currentPage: parseInt(page),
+                pageCount,
+                pageSize: parseInt(limit),
+                totalCount: count,
+            };
+            // Generate the URL of the next page if it exists
+            const nextPage = pageCount > parseInt(page)
+                ? express_paginate_1.default.getArrayPages(req)(parseInt(page) + 1, pageCount, parseInt(page))
+                : null;
+            const response = {
+                results: rows,
+                pagination,
+                nextPage,
+            };
+            res.status(200).send(response);
+        }
+        catch (error) {
+            res.status(400).send(error);
+        }
+    });
+}
+exports.getAllCategory = getAllCategory;

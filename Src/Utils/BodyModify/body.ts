@@ -1,4 +1,4 @@
-function modifyBody(inputString: string):string {
+function modifyBody(inputString: string): string {
     const imgRegex = /<img\b[^>]*>/g;
 
     const replacedString = inputString.replace(imgRegex, (match) => {
@@ -10,7 +10,7 @@ function modifyBody(inputString: string):string {
         }
         return match; // If src attribute is not found, keep the original <img> tag
     });
-    return replacedString
+    return replacedString;
 }
 // Replace all <img> tags with <CardMedia> and store the result
-export default modifyBody
+export default modifyBody;

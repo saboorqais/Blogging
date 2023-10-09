@@ -17,17 +17,19 @@ function createUser(req, res) {
     return __awaiter(this, void 0, void 0, function* () {
         try {
             const body = req.body;
-            yield SchemaValidation_1.userSchema.validate(req.body);
+            yield SchemaValidation_1.userSchema.validate(Object.assign(Object.assign({}, req.body), { role: "user" }));
             const newUser = yield user_1.User.create({
                 firstName: body.firstName,
                 lastName: body.lastName,
                 email: body.email,
                 password: body.password,
+                role: body.role,
             });
             yield newUser.save();
             res.status(200).send({ response: newUser.toJSON() });
         }
         catch (error) {
+            console.log(error);
             if (error instanceof sequelize_1.UniqueConstraintError) {
                 // Handle unique constraint violation (e.g., duplicate email)
                 res.status(400).json("User with this email already exists");

@@ -19,11 +19,15 @@ const express_paginate_1 = __importDefault(require("express-paginate"));
 function getUserPost(req, res) {
     return __awaiter(this, void 0, void 0, function* () {
         try {
-            const { id } = req.params;
-            const posts = yield post_1.Post.findAll({
-                where: {
-                    userId: id,
-                },
+            const { page, limit } = req.query;
+            const { userId } = req.params;
+            const user = yield user_1.User.findByPk(userId);
+            const { count, rows } = yield post_1.Post.findAndCountAll({
+                offset: (parseInt(page) - 1) * parseInt(limit),
+                limit: parseInt(limit),
+                where: user.role === "user" ? {
+                    userId: userId,
+                } : {},
                 include: {
                     model: user_1.User,
                     attributes: {
@@ -32,11 +36,26 @@ function getUserPost(req, res) {
                 },
             });
             // Handle the retrieved data (posts)
-            res.status(200).send(posts);
+            const pageCount = Math.ceil(count / parseInt(limit));
+            const pagination = {
+                currentPage: parseInt(page),
+                pageCount,
+                pageSize: parseInt(limit),
+                totalCount: count,
+            };
+            // Generate the URL of the next page if it exists
+            const nextPage = pageCount > parseInt(page)
+                ? express_paginate_1.default.getArrayPages(req)(parseInt(page) + 1, pageCount, parseInt(page))
+                : null;
+            const response = {
+                results: rows,
+                pagination,
+                nextPage,
+            };
+            res.status(200).send(response);
         }
         catch (error) {
-            // Handle any errors
-            res.status(500).send(error);
+            res.status(400).send(error);
         }
     });
 }
@@ -48,7 +67,7 @@ function getPost(req, res) {
             const posts = yield post_1.Post.findOne({
                 where: {
                     id: id,
-                }
+                },
             });
             // Handle the retrieved data (posts)
             res.status(200).send(posts);

@@ -10,6 +10,7 @@ class User extends Model<UserSchema> implements UserSchema {
   public firstName!: string;
   public lastName!: string | null;
   public email!: string;
+  public role!: string;
   public password!: string;
   public readonly createdAt!: Date;
   public readonly updatedAt!: Date;
@@ -27,6 +28,9 @@ User.init(
       allowNull: false,
     },
     lastName: {
+      type: DataTypes.STRING,
+    },
+    role: {
       type: DataTypes.STRING,
     },
     email: {

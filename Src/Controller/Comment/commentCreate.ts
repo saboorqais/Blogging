@@ -6,15 +6,10 @@ import { Model } from "sequelize";
 
 export async function createComment(req: Request, res: Response): Promise<void> {
   try {
-    const body: CommentSchema = req.body;
-    console.log("SAdddd")
-    console.log(body)
+    const comment: CommentSchema = req.body;
     await commentSchema.validate(req.body);
     const newPost: Model<CommentSchema> = await Comment.create({
-      text: body.text,
-      postId: body.postId,
-      parentId: body.parentId,
-      userId: body.userId,
+     ...comment
     });
     await newPost.save();
     res.status(200).send(newPost.toJSON());

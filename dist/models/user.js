@@ -25,6 +25,9 @@ User.init({
     lastName: {
         type: sequelize_1.DataTypes.STRING,
     },
+    role: {
+        type: sequelize_1.DataTypes.STRING,
+    },
     email: {
         type: sequelize_1.DataTypes.STRING,
         unique: true,

@@ -17,6 +17,29 @@ export async function getComment(req: Request, res: Response): Promise<void> {
         res.status(500).send(error);
     }
 }
+export async function editComment(req: Request, res: Response): Promise<void> {
+    try {
+        const { id } = req.params;
+        const comment: Comment = req.body;
+
+        const editComment = await Comment.findByPk(id);
+        if (!editComment) {
+            res.status(400).send({ message: "No Comment Exist" });
+        }
+        await editComment.update({
+            userId: comment.userId,
+            text: comment.text,
+            parentId: comment.parentId,
+            postId: comment.postId,
+        });
+        // Handle the retrieved data (posts)
+        res.status(200).send(editComment.toJSON());
+    } catch (error) {
+        // Handle any errors
+        console.log(error);
+        res.status(400).send(error);
+    }
+}
 
 export async function getNestedComments(req: Request, res: Response) {
     try {
@@ -83,23 +106,19 @@ export async function getNLevelComment(req: Request, res: Response) {
 
 export async function getPaginateComment(req: Request, res: Response) {
     try {
-      console.log("Paginate Run")
-       // Access the offset calculated by express-paginate
-     
+        // Access the offset calculated by express-paginate
+
         const { page, limit } = req.query;
         const { postId, parentId } = req.params;
-        console.log(parentId);
         const parenCheck = parentId === "null" ? null : parentId;
         const { count, rows } = await Comment.findAndCountAll({
             offset: (parseInt(page as string) - 1) * parseInt(limit as string),
             limit: parseInt(limit as string),
             where: {
                 postId,
-               parentId: parenCheck,
+                parentId: parenCheck,
             },
-            attributes: {
-                exclude: ["userId"], // Exclude the specified fields
-            },
+            
             include: [
                 {
                     model: User,
@@ -163,4 +182,34 @@ export async function getCommentsWithChildren(postId: string, parentId = null) {
     }
 
     return comments;
+}
+export async function deleteNestedComments(req: Request, res: Response) {
+    try {
+        const { id } = req.params;
+        const deleted = await deleteCommentAndChildren(parseInt(id));
+        res.status(200).send(deleted);
+    } catch (error) {
+        res.status(400).json({ message: "Not Deleted" });
+    }
+}
+async function deleteCommentAndChildren(commentId: number) {
+    // Find the comment by ID
+    const comment = await Comment.findByPk(commentId);
+
+    if (!comment) {
+        // Comment not found, do nothing
+        return;
+    }
+
+    // Delete the comment
+    await comment.destroy();
+
+    // Find and delete children comments
+    const childrenComments = await Comment.findAll({
+        where: { parentId: commentId },
+    });
+
+    for (const childComment of childrenComments) {
+        await deleteCommentAndChildren(childComment.id);
+    }
 }

@@ -12,7 +12,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getCommentsWithChildren = exports.getPaginateComment = exports.getNLevelComment = exports.getNLevelComments = exports.getNestedComments = exports.getComment = void 0;
+exports.deleteNestedComments = exports.getCommentsWithChildren = exports.getPaginateComment = exports.getNLevelComment = exports.getNLevelComments = exports.getNestedComments = exports.editComment = exports.getComment = void 0;
 const comments_1 = require("../../models/comments");
 const user_1 = require("../../models/user");
 const express_paginate_1 = __importDefault(require("express-paginate"));
@@ -34,6 +34,32 @@ function getComment(req, res) {
     });
 }
 exports.getComment = getComment;
+function editComment(req, res) {
+    return __awaiter(this, void 0, void 0, function* () {
+        try {
+            const { id } = req.params;
+            const comment = req.body;
+            const editComment = yield comments_1.Comment.findByPk(id);
+            if (!editComment) {
+                res.status(400).send({ message: "No Comment Exist" });
+            }
+            yield editComment.update({
+                userId: comment.userId,
+                text: comment.text,
+                parentId: comment.parentId,
+                postId: comment.postId,
+            });
+            // Handle the retrieved data (posts)
+            res.status(200).send(editComment.toJSON());
+        }
+        catch (error) {
+            // Handle any errors
+            console.log(error);
+            res.status(400).send(error);
+        }
+    });
+}
+exports.editComment = editComment;
 function getNestedComments(req, res) {
     return __awaiter(this, void 0, void 0, function* () {
         try {
@@ -110,11 +136,9 @@ exports.getNLevelComment = getNLevelComment;
 function getPaginateComment(req, res) {
     return __awaiter(this, void 0, void 0, function* () {
         try {
-            console.log("Paginate Run");
             // Access the offset calculated by express-paginate
             const { page, limit } = req.query;
             const { postId, parentId } = req.params;
-            console.log(parentId);
             const parenCheck = parentId === "null" ? null : parentId;
             const { count, rows } = yield comments_1.Comment.findAndCountAll({
                 offset: (parseInt(page) - 1) * parseInt(limit),
@@ -122,9 +146,6 @@ function getPaginateComment(req, res) {
                 where: {
                     postId,
                     parentId: parenCheck,
-                },
-                attributes: {
-                    exclude: ["userId"], // Exclude the specified fields
                 },
                 include: [
                     {
@@ -191,3 +212,35 @@ function getCommentsWithChildren(postId, parentId = null) {
     });
 }
 exports.getCommentsWithChildren = getCommentsWithChildren;
+function deleteNestedComments(req, res) {
+    return __awaiter(this, void 0, void 0, function* () {
+        try {
+            const { id } = req.params;
+            const deleted = yield deleteCommentAndChildren(parseInt(id));
+            res.status(200).send(deleted);
+        }
+        catch (error) {
+            res.status(400).json({ message: "Not Deleted" });
+        }
+    });
+}
+exports.deleteNestedComments = deleteNestedComments;
+function deleteCommentAndChildren(commentId) {
+    return __awaiter(this, void 0, void 0, function* () {
+        // Find the comment by ID
+        const comment = yield comments_1.Comment.findByPk(commentId);
+        if (!comment) {
+            // Comment not found, do nothing
+            return;
+        }
+        // Delete the comment
+        yield comment.destroy();
+        // Find and delete children comments
+        const childrenComments = yield comments_1.Comment.findAll({
+            where: { parentId: commentId },
+        });
+        for (const childComment of childrenComments) {
+            yield deleteCommentAndChildren(childComment.id);
+        }
+    });
+}
