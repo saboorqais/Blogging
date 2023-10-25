@@ -13,38 +13,36 @@ export async function createPost(req: Request, res: Response): Promise<void> {
 
 		const imagePath: string = req.file ? req.file.path : null;
 
-    const user :User = await User.findByPk(post.userId)
+		const user: User = await User.findByPk(post.userId);
 
 		await postSchema.validate({ ...post, imagePath: imagePath });
 
-		const newPost: Model<PostSchema,PostSchema> = await Post.create({
+		const newPost: Model<PostSchema, PostSchema> = await Post.create({
 			title: post.title,
 			body: modifyBody(post.body),
 			name: post.name,
-     
+
 			topic: post.topic,
 			userId: post.userId,
 			imagePath: imagePath,
 			categoryId: post.categoryId,
 		});
-    console.log(newPost)
 		await newPost.save();
 
 		await elasticClient.index({
 			index: "posts",
 			document: {
-        id:newPost.dataValues.id, 
+				id: newPost.dataValues.id,
 				title: post.title,
-        username:user.firstName,
+				username: user.firstName,
 				body: post.body,
-        topic:post.topic,
-        imagePath: imagePath,
+				topic: post.topic,
+				imagePath: imagePath,
 			},
 		});
 
 		res.status(200).send(newPost.toJSON());
 	} catch (error) {
-		console.log(error);
-		res.status(400).json(error);
+		res.status(400).json({ message: error });
 	}
 }

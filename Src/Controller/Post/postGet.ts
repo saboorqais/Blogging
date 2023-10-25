@@ -9,6 +9,11 @@ export async function getUserPost(req: Request, res: Response): Promise<void> {
         const { userId } = req.params;
 
         const user :User = await User.findByPk(userId)
+
+        if(!user){
+            res.status(404).send({message:"No User Found"});
+        }
+
       
         const { count, rows } = await Post.findAndCountAll({
               offset: (parseInt(page as string) - 1) * parseInt(limit as string),
@@ -56,6 +61,9 @@ export async function getPost(req: Request, res: Response): Promise<void> {
                 id: id,
             },
         });
+        if(!posts){
+            res.status(404).send({messgae:"No Post Found"});
+        }
         // Handle the retrieved data (posts)
         res.status(200).send(posts);
     } catch (error) {
@@ -81,6 +89,7 @@ export async function getAllPost(req: Request, res: Response): Promise<void> {
         });
         const itemCount = posts.length;
         const pageCount = Math.ceil(itemCount / parseInt(req.query.limit as string));
+
         // Handle the retrieved data (posts)
         res.status(200).send({
             results: posts,

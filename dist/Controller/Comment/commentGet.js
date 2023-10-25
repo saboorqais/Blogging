@@ -12,20 +12,23 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.deleteNestedComments = exports.getCommentsWithChildren = exports.getPaginateComment = exports.getNLevelComment = exports.getNLevelComments = exports.getNestedComments = exports.editComment = exports.getComment = void 0;
+exports.deleteNestedComments = exports.getCommentsWithChildren = exports.getPaginateComment = exports.getNLevelComment = exports.getNLevelComments = exports.editComment = exports.getComment = void 0;
 const comments_1 = require("../../models/comments");
 const user_1 = require("../../models/user");
 const express_paginate_1 = __importDefault(require("express-paginate"));
 function getComment(req, res) {
     return __awaiter(this, void 0, void 0, function* () {
         try {
-            const posts = yield comments_1.Comment.findAll({
+            const comments = yield comments_1.Comment.findAll({
                 where: {
                     postId: req.params.id,
                 },
             });
+            if (comments) {
+                res.status(404).send({ message: "No Comments Found" });
+            }
             // Handle the retrieved data (posts)
-            res.status(200).send(posts);
+            res.status(200).send(comments);
         }
         catch (error) {
             // Handle any errors
@@ -55,22 +58,11 @@ function editComment(req, res) {
         catch (error) {
             // Handle any errors
             console.log(error);
-            res.status(400).send(error);
+            res.status(400).send({ message: error });
         }
     });
 }
 exports.editComment = editComment;
-function getNestedComments(req, res) {
-    return __awaiter(this, void 0, void 0, function* () {
-        try {
-            const { id } = req.params;
-            const topLevelComments = yield getCommentsWithChildren(id, null);
-            res.status(200).send(topLevelComments[0]);
-        }
-        catch (error) { }
-    });
-}
-exports.getNestedComments = getNestedComments;
 function getNLevelComments(req, res) {
     return __awaiter(this, void 0, void 0, function* () {
         try {
@@ -97,7 +89,7 @@ function getNLevelComments(req, res) {
             res.status(200).send(comments);
         }
         catch (error) {
-            res.status(400).send(error);
+            res.status(400).send({ message: error });
         }
     });
 }
@@ -128,7 +120,7 @@ function getNLevelComment(req, res) {
             res.status(200).send(comments);
         }
         catch (error) {
-            res.status(400).send(error);
+            res.status(400).send({ message: error });
         }
     });
 }

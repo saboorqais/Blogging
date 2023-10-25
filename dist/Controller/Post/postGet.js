@@ -22,6 +22,9 @@ function getUserPost(req, res) {
             const { page, limit } = req.query;
             const { userId } = req.params;
             const user = yield user_1.User.findByPk(userId);
+            if (!user) {
+                res.status(404).send({ message: "No User Found" });
+            }
             const { count, rows } = yield post_1.Post.findAndCountAll({
                 offset: (parseInt(page) - 1) * parseInt(limit),
                 limit: parseInt(limit),
@@ -69,6 +72,9 @@ function getPost(req, res) {
                     id: id,
                 },
             });
+            if (!posts) {
+                res.status(404).send({ messgae: "No Post Found" });
+            }
             // Handle the retrieved data (posts)
             res.status(200).send(posts);
         }

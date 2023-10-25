@@ -16,7 +16,7 @@ const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
 const refresh = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const refreshToken = req.headers["authorization"];
     if (!refreshToken) {
-        return res.status(401).send("Access Denied. No refresh token provided.");
+        return res.status(401).send({ message: "Access Denied. No refresh token provided." });
     }
     try {
         const decoded = jsonwebtoken_1.default.verify(refreshToken, process.env.SECRET_KEY);
@@ -25,7 +25,7 @@ const refresh = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     }
     catch (error) {
         console.log(error);
-        return res.status(400).send(error);
+        return res.status(400).send({ message: error });
     }
 });
 exports.default = refresh;

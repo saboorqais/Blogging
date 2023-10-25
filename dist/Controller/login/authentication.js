@@ -21,12 +21,12 @@ const login = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         // Find the user by email
         const user = yield user_1.User.findOne({ where: { email } });
         if (!user) {
-            return res.status(401).json("Invalid email or password");
+            return res.status(401).json({ message: "Invalid email or password" });
         }
         // Compare the provided password with the hashed password stored in the database
         const passwordMatch = yield bcrypt_1.default.compare(password, user.password);
         if (!passwordMatch) {
-            return res.status(401).json("Invalid email or password");
+            return res.status(401).json({ message: "Invalid email or password" });
         }
         // Create a JWT token
         const token = jsonwebtoken_1.default.sign({ userId: user.id }, process.env.SECRET_KEY, { expiresIn: "1h" });
@@ -47,8 +47,7 @@ const login = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         });
     }
     catch (error) {
-        console.error("Login error:", error);
-        res.status(500).json({ error: "An error occurred during login" });
+        res.status(500).json({ message: "An error occurred during login" });
     }
 });
 exports.default = login;

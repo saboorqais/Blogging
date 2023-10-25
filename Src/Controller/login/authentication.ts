@@ -9,12 +9,13 @@ const login = async (req: Request, res: Response) => {
     // Find the user by email
     const user: User = await User.findOne({ where: { email } });
     if (!user) {
-      return res.status(401).json("Invalid email or password");
+      return res.status(401).json({message:"Invalid email or password"});
     }
     // Compare the provided password with the hashed password stored in the database
     const passwordMatch: boolean = await bcrypt.compare(password, user.password);
+    
     if (!passwordMatch) {
-      return res.status(401).json("Invalid email or password");
+      return res.status(401).json({message:"Invalid email or password"});
     }
 
     // Create a JWT token
@@ -40,8 +41,7 @@ const login = async (req: Request, res: Response) => {
       role:user.role,
     });
   } catch (error) {
-    console.error("Login error:", error);
-    res.status(500).json({ error: "An error occurred during login" });
+    res.status(500).json({ message: "An error occurred during login" });
   }
 };
 export default login;

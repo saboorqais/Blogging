@@ -21,13 +21,11 @@ function editPost(req, res) {
             const body = req.body;
             const { postId } = req.params;
             const imagePath = req.file ? req.file.path : null;
-            console.log("aSDddddddddddddd");
-            console.log(imagePath);
             // Find the post you want to update by its primary key (postId)
             const post = yield post_1.Post.findByPk(postId);
             console.log(post);
             if (!post) {
-                throw new Error("Post not found");
+                res.status(404).send({ message: "Post not Found" });
             }
             yield promises_1.default.unlink(post.imagePath);
             // Update the post's attributes with the new values
@@ -35,8 +33,7 @@ function editPost(req, res) {
             res.status(200).send(post.toJSON());
         }
         catch (error) {
-            console.log(error);
-            res.status(400).json(error);
+            res.status(400).json({ message: error });
         }
     });
 }

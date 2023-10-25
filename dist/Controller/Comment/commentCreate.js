@@ -22,7 +22,7 @@ function createComment(req, res) {
             res.status(200).send(newPost.toJSON());
         }
         catch (error) {
-            res.status(400).json(error);
+            res.status(400).json({ message: error });
         }
     });
 }

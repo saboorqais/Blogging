@@ -27,7 +27,7 @@ export async function selectionCategory(req: Request, res: Response) {
         // Construct the response object with the complete image URL and other data
         res.status(200).json(category);
     } catch (error) {
-        res.status(500).json({ error: "Internal server error" });
+        res.status(500).json({ message: "Internal server error" });
     }
 }
 
@@ -54,7 +54,7 @@ export async function getCategoryWithRelatedPosts(req: Request, res: Response) {
         // Find all posts associated with the category
         return res.json(results);
     } catch (error) {
-        return res.status(500).json({ message: "Internal server error" });
+        return res.status(500).json({ message: error});
     }
 }
 export async function getAllCategory(req: Request, res: Response) {
@@ -85,6 +85,6 @@ export async function getAllCategory(req: Request, res: Response) {
         };
         res.status(200).send(response);
     } catch (error) {
-        res.status(400).send(error);
+        res.status(400).send({ message:error});
     }
 }

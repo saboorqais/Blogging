@@ -17,7 +17,6 @@ app.use(body_parser_1.default.json());
 app.use(express_1.default.json());
 const port = 3002;
 const staticFilesDirectory = path_1.default.join(__dirname, "uploads");
-const allowedOrigins = ["https://khg4p5t5-5173.inc1.devtunnels.ms"];
 app.use(express_paginate_1.default.middleware(10, 50));
 app.use(body_parser_1.default.urlencoded({ extended: true }));
 // Serve static files (including images) from the 'uploads' directory

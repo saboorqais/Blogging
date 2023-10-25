@@ -44,7 +44,7 @@ function selectionCategory(req, res) {
             res.status(200).json(category);
         }
         catch (error) {
-            res.status(500).json({ error: "Internal server error" });
+            res.status(500).json({ message: "Internal server error" });
         }
     });
 }
@@ -70,7 +70,7 @@ function getCategoryWithRelatedPosts(req, res) {
             return res.json(results);
         }
         catch (error) {
-            return res.status(500).json({ message: "Internal server error" });
+            return res.status(500).json({ message: error });
         }
     });
 }
@@ -103,7 +103,7 @@ function getAllCategory(req, res) {
             res.status(200).send(response);
         }
         catch (error) {
-            res.status(400).send(error);
+            res.status(400).send({ message: error });
         }
     });
 }

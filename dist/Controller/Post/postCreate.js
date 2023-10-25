@@ -34,7 +34,6 @@ function createPost(req, res) {
                 imagePath: imagePath,
                 categoryId: post.categoryId,
             });
-            console.log(newPost);
             yield newPost.save();
             yield ElasticSearchClient_1.default.index({
                 index: "posts",
@@ -50,8 +49,7 @@ function createPost(req, res) {
             res.status(200).send(newPost.toJSON());
         }
         catch (error) {
-            console.log(error);
-            res.status(400).json(error);
+            res.status(400).json({ message: error });
         }
     });
 }

@@ -24,7 +24,7 @@ function editCategory(req, res) {
             // Find the post you want to update by its primary key (postId)
             const category = yield categories_1.Category.findByPk(categoryId);
             if (!category) {
-                throw new Error("Category not found");
+                res.status(404).json({ message: "Category not found" });
             }
             yield promises_1.default.unlink(category.imagePath);
             // Update the post's attributes with the new values
@@ -33,7 +33,7 @@ function editCategory(req, res) {
         }
         catch (error) {
             console.log(error);
-            res.status(400).json(error);
+            res.status(400).json({ message: error });
         }
     });
 }

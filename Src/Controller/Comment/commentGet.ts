@@ -4,13 +4,16 @@ import { User } from "../../models/user";
 import paginate from "express-paginate";
 export async function getComment(req: Request, res: Response): Promise<void> {
     try {
-        const posts: Comment[] = await Comment.findAll({
+        const comments: Comment[] = await Comment.findAll({
             where: {
                 postId: req.params.id,
             },
         });
+        if(comments){
+            res.status(404).send({message:"No Comments Found"});
+        }
         // Handle the retrieved data (posts)
-        res.status(200).send(posts);
+        res.status(200).send(comments);
     } catch (error) {
         // Handle any errors
 
@@ -37,16 +40,8 @@ export async function editComment(req: Request, res: Response): Promise<void> {
     } catch (error) {
         // Handle any errors
         console.log(error);
-        res.status(400).send(error);
+        res.status(400).send({ message:error});
     }
-}
-
-export async function getNestedComments(req: Request, res: Response) {
-    try {
-        const { id } = req.params;
-        const topLevelComments = await getCommentsWithChildren(id, null);
-        res.status(200).send(topLevelComments[0]);
-    } catch (error) {}
 }
 
 export async function getNLevelComments(req: Request, res: Response) {
@@ -73,7 +68,7 @@ export async function getNLevelComments(req: Request, res: Response) {
         });
         res.status(200).send(comments);
     } catch (error) {
-        res.status(400).send(error);
+        res.status(400).send({ message:error});
     }
 }
 export async function getNLevelComment(req: Request, res: Response) {
@@ -100,7 +95,7 @@ export async function getNLevelComment(req: Request, res: Response) {
         });
         res.status(200).send(comments);
     } catch (error) {
-        res.status(400).send(error);
+        res.status(400).send({ message:error});
     }
 }
 
@@ -187,6 +182,7 @@ export async function deleteNestedComments(req: Request, res: Response) {
     try {
         const { id } = req.params;
         const deleted = await deleteCommentAndChildren(parseInt(id));
+        
         res.status(200).send(deleted);
     } catch (error) {
         res.status(400).json({ message: "Not Deleted" });

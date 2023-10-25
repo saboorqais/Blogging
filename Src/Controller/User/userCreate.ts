@@ -22,13 +22,13 @@ export async function createUser(req: Request, res: Response) {
         console.log(error);
         if (error instanceof UniqueConstraintError) {
             // Handle unique constraint violation (e.g., duplicate email)
-            res.status(400).json("User with this email already exists");
+            res.status(400).json({ message:"User with this email already exists"});
         } else if (error instanceof ValidationError) {
             // Handle other validation errors
             const validationErrors = error.errors.map((e) => e.message);
-            res.status(400).json({ error: validationErrors });
+            res.status(400).json({ message: validationErrors });
         } else {
-            res.status(400).json({ error: error.message });
+            res.status(400).json({ message: error.message });
         }
     }
 }

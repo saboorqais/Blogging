@@ -14,6 +14,6 @@ export async function createComment(req: Request, res: Response): Promise<void> 
     await newPost.save();
     res.status(200).send(newPost.toJSON());
   } catch (error) {
-    res.status(400).json(error);
+    res.status(400).json({message:error});
   }
 }

@@ -18,7 +18,6 @@ function postSearch(req, res) {
     return __awaiter(this, void 0, void 0, function* () {
         const { keyword } = req.query;
         const searchKeyword = keyword.toString();
-        console.log(keyword);
         try {
             // Call the searchPostsByKeyword function to perform the search
             const results = yield ElasticSearchClient_1.default.search({
@@ -53,14 +52,15 @@ function postSearch(req, res) {
                     },
                 },
             });
-            console.log(results);
+            if (!results) {
+                res.status(404).json({ message: "No Post Found" });
+            }
             // Return the search results as a JSON response
             res.json({ results: [...results.hits.hits] });
         }
         catch (error) {
             // Handle any errors that may occur during the search
-            console.error("Error during search:", error);
-            res.status(500).json({ error: "An error occurred during the search." });
+            res.status(500).json({ message: "An error occurred during the search." });
         }
     });
 }
